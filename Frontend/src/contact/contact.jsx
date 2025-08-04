@@ -8,7 +8,7 @@ const contact = () => {
     <>
     <div>
         <Navbar/>
-        <div className='min-h-screen'>
+        <div className='min-h-screen pt-20'>
             <Contacts/>
         </div>
         <Footer/>

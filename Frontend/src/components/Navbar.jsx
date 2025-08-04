@@ -2,8 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useState,useEffect } from 'react'
 import Login from './Login'
+import { useAuth } from '../context/AuthProvider'
+import Logout from './Logout'
 
 const Navbar = () => {
+  const [authUser, setAuthUser] = useAuth();
 
   const [theme, setTheme] = useState(localStorage.getItem('theme')? localStorage.getItem('theme') : 'light');
   const element = document.documentElement;
@@ -130,14 +133,17 @@ const Navbar = () => {
 </label>
 </div>
 
-
-    <div>
+{
+  authUser ?<Logout/>:
+  <div>
     <a className="bg-black text-white px-3 py-2 rounded-md hover:bg-slate-800 duration-200 hover:dark:bg-white  cursor-pointer dark:bg-white dark:text-black"
     onClick={() => {document.getElementById('my_modal_3').showModal()}}>
       Login
       </a>
     <Login/>
-    </div>
+  </div>
+}
+
   </div>
 </div>
 </div>

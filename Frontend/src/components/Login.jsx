@@ -1,10 +1,37 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from "react-hook-form";
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const Login = () => {
   const { register, handleSubmit,  formState: { errors } } = useForm();
-  const onSubmit = data =>{console.log(data)};
+  const onSubmit = async(data) =>{
+    const userInfo={
+      email: data.email,
+      password: data.password
+    }
+    await axios.post("http://localhost:4001/user/login", userInfo)
+    .then((res)=>{   //then returns a promise , promise is resolved when the data is received
+      // promise is rejected when there is an error , promis is either resolved or rejected
+      console.log(res.data);
+      if(res.data){
+        toast.success('Successfully logged in'); 
+        document.getElementById("my_modal_3").close();
+        setTimeout(() => {
+          localStorage.setItem("Users", JSON.stringify(res.data.user));
+          window.location.reload();
+          // Reload the page after 3 seconds to reflect the changes in the UI
+        }, 1000);
+      }
+      
+    }).catch((err)=>{
+      if(err.response){
+        console.log(err.response.data);
+        toast.error("Error: " + err.response.data.message);
+        setTimeout(() => {},1000);
+    }}) 
+  };
 
 
   return (

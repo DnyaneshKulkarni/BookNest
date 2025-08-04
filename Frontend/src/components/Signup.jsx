@@ -1,12 +1,38 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link,useLocation,useNavigate } from 'react-router-dom'
 import Login from './Login'
 import { useForm } from "react-hook-form";
-
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const signup = () => {
+  const location =useLocation()
+  const navigate= useNavigate()
+  const from =location.state?.from?.pathname||"/"
    const { register, handleSubmit,  formState: { errors } } = useForm();
-  const onSubmit = data =>{console.log(data)};
+  const onSubmit =async (data) =>{
+    const userInfo={
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password
+    }
+    await axios.post("http://localhost:4001/user/signup", userInfo)
+    .then((res)=>{   //then returns a promise , promise is resolved when the data is received
+      // promise is rejected when there is an error , promis is either resolved or rejected
+      console.log(res.data);
+      if(res.data){
+        toast.success('Successfully signed up'); 
+        navigate(from,{replace:true});  
+      }
+
+      localStorage.setItem("Users", JSON.stringify(res.data.user));
+    }).catch((err)=>{
+      if(err.response){
+        console.log(err.response.data);
+        toast.error("Error: " + err.response.data.message);
+    }
+  }) 
+  };
   return (
    <>
    <div className='flex h-screen justify-center items-center '>
@@ -26,9 +52,9 @@ const signup = () => {
         <input type="text" 
          placeholder='Enter your name ' 
          className='border border-black rounded-md p-2 mt-2'
-         {...register("name", { required: true })}/>
+         {...register("fullname", { required: true })}/>
 
-         {errors.name && <span className='text-red-900'>This field is required</span>}
+         {errors.fullname && <span className='text-red-900'>This field is required</span>}
 
         </div>
 
@@ -53,18 +79,19 @@ const signup = () => {
 
         <div className='mt-8 flex justify-around gap-20'>
             <button className='border px-3 py-2 rounded-md cursor-pointer bg-pink-400 hover:bg-pink-600'>SignUp </button>
-            <p className='mt-2'>Already SignedUp? 
+            <div className='mt-2'>Already SignedUp? 
              
             <button className='underline text-blue-500 cursor-pointer'
              onClick={() => {document.getElementById('my_modal_3').showModal()}}>
                 Login
             </button>
-               <Login />
-              </p>
+               
+            </div>
              
         </div>
        </div>
      </form>
+     <Login />
   </div>
 </div> 
    </div>
